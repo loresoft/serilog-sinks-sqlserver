@@ -59,6 +59,7 @@ public class SqlServerSinkOptions : BatchingOptions
     /// <param name="propertyName">The name of the log event property to map.</param>
     /// <param name="propertyType">The data type of the database column. Defaults to <see cref="string"/> if not specified.</param>
     /// <param name="columnName">The name of the database column. Defaults to <paramref name="propertyName"/> if not specified.</param>
+    /// <param name="size">The maximum size of the database column. Defaults to <c>null</c> if not specified.</param>
     /// <returns>The current <see cref="SqlServerSinkOptions"/> instance for method chaining.</returns>
     /// <remarks>
     /// This method provides a convenient way to add custom property mappings while configuring the sink.
@@ -67,13 +68,16 @@ public class SqlServerSinkOptions : BatchingOptions
     public SqlServerSinkOptions AddPropertyMapping(
         string propertyName,
         Type? propertyType = null,
-        string? columnName = null)
+        string? columnName = null,
+        int? size = null)
     {
         var mapping = new ColumnMapping<LogEvent>
         (
             ColumnName: columnName ?? propertyName,
             ColumnType: propertyType ?? typeof(string),
-            GetValue: logEvent => logEvent.GetPropertyValue(propertyName)
+            GetValue: logEvent => logEvent.GetPropertyValue(propertyName),
+            Nullable: true,
+            Size: size
         );
 
         Mappings.Add(mapping);

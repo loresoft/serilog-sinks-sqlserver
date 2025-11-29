@@ -103,12 +103,14 @@ public class MappingContext<T>
         // populate rows
         for (int i = 0; i < Mappings.Count; i++)
         {
+            var mapping = Mappings[i];
+
             var rowData = new object[5];
             rowData[0] = i;
-            rowData[1] = Mappings[i].ColumnName;
-            rowData[2] = Mappings[i].ColumnType;
-            rowData[3] = -1;
-            rowData[4] = Mappings[i].Nullable;
+            rowData[1] = mapping.ColumnName;
+            rowData[2] = mapping.ColumnType;
+            rowData[3] = mapping.Size ?? -1;
+            rowData[4] = mapping.Nullable;
 
             table.Rows.Add(rowData);
         }
