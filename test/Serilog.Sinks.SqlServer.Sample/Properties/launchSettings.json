@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "sample.standard": {
+      "commandName": "Project",
+      "commandLineArgs": "standard"
+    },
+    "sample.extended": {
+      "commandName": "Project",
+      "commandLineArgs": "extended"
+    },
+    "sample.config": {
+      "commandName": "Project",
+      "commandLineArgs": "config"
+    }
+  }
+}

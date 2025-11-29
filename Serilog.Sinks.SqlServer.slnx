@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Build/">
+    <File Path=".github/workflows/dotnet.yml" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+    <File Path="src/Directory.Build.props" />
+  </Folder>
+  <Project Path="src/Serilog.Sinks.SqlServer/Serilog.Sinks.SqlServer.csproj" Id="8a1163d7-c953-47db-9e98-ad719a7d07ef" />
+  <Project Path="test/Serilog.Sinks.SqlServer.Sample/Serilog.Sinks.SqlServer.Sample.csproj" Id="6167d9cb-9972-41af-8cd0-5ba90af583d1" />
+  <Project Path="test/Serilog.Sinks.SqlServer.Tests/Serilog.Sinks.SqlServer.Tests.csproj" Id="fab4ab2c-a4ca-4937-96b7-1e3d61f2dbbf" />
+</Solution>
