@@ -16,6 +16,42 @@ A high-performance [Serilog](https://serilog.net/) sink that writes log events t
 - **Distributed Tracing**: Built-in support for TraceId and SpanId
 - **Auto Truncation**: Automatically truncates string values to match column size constraints, preventing insert errors
 
+## Performance Comparison
+
+This sink is designed to be a **high-performance, lightweight alternative** to `Serilog.Sinks.MSSqlServer` with significant improvements in speed and memory efficiency.
+
+### Benchmark Results
+
+Based on `Serilog.Sinks.SqlServer.Benchmark` tests (100 log events per batch):
+
+| Method          |     Mean | Rank |     Gen0 |    Gen1 |  Allocated |
+| --------------- | -------: | ---: | -------: | ------: | ---------: |
+| SqlServerSink   | 2.082 ms |    1 |   7.8125 |       - |  438.31 KB |
+| MSSqlServerSink | 2.666 ms |    2 | 117.1875 | 27.3438 | 5773.93 KB |
+
+**Key Performance Benefits:**
+
+- **~22% faster** execution time (2.082 ms vs 2.666 ms)
+- **~92% fewer allocations** (438 KB vs 5,774 KB per batch)
+- **Significantly reduced GC pressure** from 13x lower memory allocations
+- **Optimized bulk copy** operations with minimal overhead
+
+### Why This Sink is Faster
+
+1. **Streamlined Architecture**: Focused solely on high-performance SQL Server logging without legacy compatibility layers
+2. **Efficient Memory Usage**: Minimal allocations through careful use of `ArrayBufferWriter`, `Span<T>`, and modern .NET APIs
+3. **Optimized JSON Serialization**: Custom `JsonWriter` using `Utf8JsonWriter` for zero-copy serialization
+4. **Direct Bulk Copy**: Simplified data pipeline from log events to `SqlBulkCopy` with fewer intermediate transformations
+5. **No Reflection Overhead**: Uses pre-defined mappings with delegate-based value extraction
+6. **Avoids DataTable**: Uses lightweight `IDataReader` implementation instead of `DataTable`, eliminating the overhead of DataTable's internal structures
+
+### Simplified Codebase
+
+- **Fewer dependencies**: Minimal external packages (only `Serilog`, `Microsoft.Data.SqlClient`, and polyfills)
+- **Smaller footprint**: Focused implementation without legacy features
+- **Easier to understand**: Clear, modern C# code using latest language features
+- **Better maintainability**: Single-purpose design makes updates and fixes straightforward
+
 ## Installation
 
 Install the sink via NuGet:
@@ -277,38 +313,6 @@ The `Properties` column stores log event properties as a JSON object. Property v
 {
   "Roles": ["Admin", "User", "Manager"],
   "Numbers": [1, 2, 3, 4, 5]
-}
-```
-
-**Dictionaries:**
-
-```json
-{
-  "Headers": {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer token"
-  }
-}
-```
-
-**Complex nested structures:**
-
-```json
-{
-  "Request": {
-    "Method": "POST",
-    "Path": "/api/users",
-    "Headers": {
-      "Content-Type": "application/json",
-      "User-Agent": "MyApp/1.0"
-    },
-    "Body": {
-      "Users": [
-        { "Id": 1, "Name": "Alice" },
-        { "Id": 2, "Name": "Bob" }
-      ]
-    }
-  }
 }
 ```
 
