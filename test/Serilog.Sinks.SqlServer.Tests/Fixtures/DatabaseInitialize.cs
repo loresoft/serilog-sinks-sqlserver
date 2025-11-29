@@ -3,12 +3,8 @@ using System.Text;
 
 using DbUp;
 using DbUp.Engine;
-using DbUp.Engine.Output;
 
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Serilog.Sinks.SqlServer.Tests.Fixtures;
 

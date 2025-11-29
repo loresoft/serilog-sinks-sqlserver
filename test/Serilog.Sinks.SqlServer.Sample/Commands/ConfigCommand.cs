@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using Serilog.Sinks.Mongo.Sample.Services;
+using Serilog.Sinks.SqlServer.Sample.Services;
 
-namespace Serilog.Sinks.Mongo.Sample.Commands;
+namespace Serilog.Sinks.SqlServer.Sample.Commands;
 
 public class ConfigCommand : Command
 {

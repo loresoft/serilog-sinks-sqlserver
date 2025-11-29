@@ -206,6 +206,121 @@ The sink includes the following standard column mappings:
 | `Properties`    | `string`         | Additional properties as JSON            | Yes      | MAX  |
 | `SourceContext` | `string`         | Source context (typically class name)    | Yes      | 1000 |
 
+### JSON Structure for Exception and Properties
+
+#### Exception Column
+
+The `Exception` column stores exception details as a JSON object with the following structure:
+
+```json
+{
+  "Message": "The error message",
+  "BaseMessage": "Inner exception message (if present)",
+  "Type": "System.InvalidOperationException",
+  "Text": "Full exception text including stack trace",
+  "HResult": -2146233079,
+  "ErrorCode": -2147467259,
+  "Source": "MyApplication",
+  "MethodName": "MyMethod",
+  "ModuleName": "MyAssembly",
+  "ModuleVersion": "1.0.0.0"
+}
+```
+
+**Key fields:**
+
+- `Message` - The exception's primary error message
+- `BaseMessage` - Message from the innermost exception (if there's an inner exception chain)
+- `Type` - Fully qualified type name of the exception
+- `Text` - Complete exception text including stack trace (from `ToString()`)
+- `HResult` - The HRESULT error code
+- `ErrorCode` - Error code for `ExternalException` types
+- `Source` - The application or object that caused the error
+- `MethodName` - Name of the method that threw the exception
+- `ModuleName` - Name of the assembly containing the throwing method
+- `ModuleVersion` - Version of the assembly
+
+> **Note:** Aggregate exceptions with a single inner exception are automatically flattened to the inner exception.
+
+#### Properties Column
+
+The `Properties` column stores log event properties as a JSON object. Property values are serialized according to their type:
+
+**Scalar values:**
+
+```json
+{
+  "UserId": 123,
+  "UserName": "John Doe",
+  "IsActive": true,
+  "Amount": 99.99,
+  "RequestId": "550e8400-e29b-41d4-a716-446655440000",
+  "Timestamp": "2024-01-15T10:30:45Z"
+}
+```
+
+**Structured values:**
+
+```json
+{
+  "User": {
+    "Id": 123,
+    "Name": "John Doe",
+    "Email": "john@example.com"
+  }
+}
+```
+
+**Arrays/Sequences:**
+
+```json
+{
+  "Roles": ["Admin", "User", "Manager"],
+  "Numbers": [1, 2, 3, 4, 5]
+}
+```
+
+**Dictionaries:**
+
+```json
+{
+  "Headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer token"
+  }
+}
+```
+
+**Complex nested structures:**
+
+```json
+{
+  "Request": {
+    "Method": "POST",
+    "Path": "/api/users",
+    "Headers": {
+      "Content-Type": "application/json",
+      "User-Agent": "MyApp/1.0"
+    },
+    "Body": {
+      "Users": [
+        { "Id": 1, "Name": "Alice" },
+        { "Id": 2, "Name": "Bob" }
+      ]
+    }
+  }
+}
+```
+
+**Supported scalar types:**
+
+- Primitive types: `string`, `bool`, `int`, `long`, `double`, `float`, `decimal`, `byte`, `short`, etc.
+- Date/time types: `DateTime`, `DateTimeOffset`, `TimeSpan`, `DateOnly`, `TimeOnly` (as ISO strings)
+- Other types: `Guid` (as string), `Enum` (as string), `BigInteger` (as string), `char` (as string)
+- `null` values are preserved
+
+> **Note:** By default, properties enriched via `FromLogContext()` or `WithProperty()` are included in this column. You can extract specific properties to dedicated columns using custom mappings (see below).
+
 ### Custom Property Mappings
 
 Add custom property mappings to log additional data:

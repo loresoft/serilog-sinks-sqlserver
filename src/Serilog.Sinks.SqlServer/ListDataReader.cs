@@ -2,6 +2,14 @@ using System.Data;
 
 namespace Serilog.Sinks.SqlServer;
 
+/// <summary>
+/// Provides an <see cref="IDataReader"/> implementation for reading a list of items with configurable column mappings.
+/// </summary>
+/// <typeparam name="T">The type of items to read.</typeparam>
+/// <remarks>
+/// This class enables bulk insert operations by wrapping an enumerable collection and exposing it through the IDataReader interface.
+/// Column mappings are defined through the <see cref="MappingContext{T}"/> which specifies how to extract values from each item.
+/// </remarks>
 public class ListDataReader<T> : IDataReader
 {
     private readonly IEnumerator<T> _iterator;
@@ -9,6 +17,12 @@ public class ListDataReader<T> : IDataReader
 
     private bool _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ListDataReader{T}"/> class.
+    /// </summary>
+    /// <param name="logEvents">The collection of items to read.</param>
+    /// <param name="mappingContext">The mapping context that defines how to map items to columns.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="logEvents"/> or <paramref name="mappingContext"/> is null.</exception>
     public ListDataReader(
         IEnumerable<T> logEvents,
         MappingContext<T> mappingContext)
@@ -54,6 +68,10 @@ public class ListDataReader<T> : IDataReader
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases the resources used by the <see cref="ListDataReader{T}"/>.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
@@ -98,7 +116,15 @@ public class ListDataReader<T> : IDataReader
         return columnMapping.ColumnType;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the value of the specified column in its native format.
+    /// </summary>
+    /// <param name="i">The zero-based column ordinal.</param>
+    /// <returns>The value of the specified column, or <see cref="DBNull.Value"/> if the value is null.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when no column mapping is found for the specified ordinal.</exception>
+    /// <remarks>
+    /// String values that exceed the column's defined size are automatically truncated to fit the maximum length.
+    /// </remarks>
     public object GetValue(int i)
     {
         var columnMapping = _mappingContext.GetMapping(i);

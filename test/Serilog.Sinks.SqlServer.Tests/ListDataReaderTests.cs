@@ -1200,8 +1200,8 @@ public class ListDataReaderTests
         // Arrange
         var data = new List<TestEntity>
         {
-            new TestEntity 
-            { 
+            new TestEntity
+            {
                 Name = "FirstLongValue",
                 NullableString = "SecondLongValue"
             }

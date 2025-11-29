@@ -1,10 +1,10 @@
+using System.Diagnostics;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using System.Diagnostics;
-
-namespace Serilog.Sinks.Mongo.Sample.Services;
+namespace Serilog.Sinks.SqlServer.Sample.Services;
 
 internal class LoggingService : BackgroundService
 {

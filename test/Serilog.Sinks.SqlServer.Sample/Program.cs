@@ -1,7 +1,7 @@
 using System.CommandLine;
 
 using Serilog.Debugging;
-using Serilog.Sinks.Mongo.Sample.Commands;
+using Serilog.Sinks.SqlServer.Sample.Commands;
 
 namespace Serilog.Sinks.SqlServer.Sample;
 

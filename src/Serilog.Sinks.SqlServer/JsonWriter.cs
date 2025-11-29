@@ -8,8 +8,20 @@ using Serilog.Events;
 
 namespace Serilog.Sinks.SqlServer;
 
+/// <summary>
+/// Provides utility methods for writing Serilog log event data to JSON format.
+/// </summary>
 public static class JsonWriter
 {
+    /// <summary>
+    /// Writes an exception to a JSON string representation.
+    /// </summary>
+    /// <param name="exception">The exception to serialize. Can be null.</param>
+    /// <returns>A JSON string containing exception details, or null if the exception is null.</returns>
+    /// <remarks>
+    /// The JSON output includes the exception message, type, full text, error codes, source, and method information.
+    /// Aggregate exceptions with a single inner exception are automatically flattened.
+    /// </remarks>
     public static string? WriteException(Exception? exception)
     {
         if (exception == null)
@@ -77,6 +89,12 @@ public static class JsonWriter
 
     }
 
+    /// <summary>
+    /// Writes a collection of log event properties to a JSON string representation.
+    /// </summary>
+    /// <param name="properties">The dictionary of log event properties to serialize. Can be null or empty.</param>
+    /// <param name="ignored">An optional set of property names to exclude from the output.</param>
+    /// <returns>A JSON string containing the properties, or null if there are no properties to write or all properties are ignored.</returns>
     public static string? WriteProperties(IReadOnlyDictionary<string, LogEventPropertyValue>? properties, HashSet<string>? ignored = null)
     {
         // no properties to write
@@ -117,6 +135,11 @@ public static class JsonWriter
 #endif
     }
 
+    /// <summary>
+    /// Writes a single log event property value to a JSON string representation.
+    /// </summary>
+    /// <param name="value">The log event property value to serialize. Can be null.</param>
+    /// <returns>A JSON string containing the property value, or null if the value is null.</returns>
     public static string? WritePropertyValue(LogEventPropertyValue value)
     {
         if (value == null)
@@ -141,8 +164,15 @@ public static class JsonWriter
 #endif
     }
 
-
-    public static void WritePropertyValue(Utf8JsonWriter writer, LogEventPropertyValue value)
+    /// <summary>
+    /// Writes a log event property value to the specified JSON writer.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="value">The log event property value to write.</param>
+    /// <remarks>
+    /// Handles scalar values, sequences, structures, and dictionaries appropriately.
+    /// </remarks>
+    private static void WritePropertyValue(Utf8JsonWriter writer, LogEventPropertyValue value)
     {
         if (value is ScalarValue scalarValue)
             WriteScalarValue(writer, scalarValue);
@@ -156,7 +186,12 @@ public static class JsonWriter
             writer.WriteStringValue(value.ToString());
     }
 
-    public static void WriteDictionaryValue(Utf8JsonWriter writer, DictionaryValue dictionaryValue)
+    /// <summary>
+    /// Writes a dictionary value to the specified JSON writer as a JSON object.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="dictionaryValue">The dictionary value to write.</param>
+    private static void WriteDictionaryValue(Utf8JsonWriter writer, DictionaryValue dictionaryValue)
     {
         writer.WriteStartObject();
         foreach (var kvp in dictionaryValue.Elements)
@@ -170,7 +205,12 @@ public static class JsonWriter
         writer.WriteEndObject();
     }
 
-    public static void WriteStructureValue(Utf8JsonWriter writer, StructureValue structureValue)
+    /// <summary>
+    /// Writes a structure value to the specified JSON writer as a JSON object.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="structureValue">The structure value to write.</param>
+    private static void WriteStructureValue(Utf8JsonWriter writer, StructureValue structureValue)
     {
         writer.WriteStartObject();
         foreach (var prop in structureValue.Properties)
@@ -181,7 +221,12 @@ public static class JsonWriter
         writer.WriteEndObject();
     }
 
-    public static void WriteSequenceValue(Utf8JsonWriter writer, SequenceValue sequenceValue)
+    /// <summary>
+    /// Writes a sequence value to the specified JSON writer as a JSON array.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="sequenceValue">The sequence value to write.</param>
+    private static void WriteSequenceValue(Utf8JsonWriter writer, SequenceValue sequenceValue)
     {
         writer.WriteStartArray();
         foreach (var item in sequenceValue.Elements)
@@ -191,7 +236,15 @@ public static class JsonWriter
         writer.WriteEndArray();
     }
 
-    public static void WriteScalarValue(Utf8JsonWriter writer, ScalarValue scalarValue)
+    /// <summary>
+    /// Writes a scalar value to the specified JSON writer with appropriate JSON typing.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="scalarValue">The scalar value to write.</param>
+    /// <remarks>
+    /// Handles all primitive types, date/time types, numeric types, and falls back to JSON serialization for unknown types.
+    /// </remarks>
+    private static void WriteScalarValue(Utf8JsonWriter writer, ScalarValue scalarValue)
     {
         if (scalarValue.Value == null)
         {

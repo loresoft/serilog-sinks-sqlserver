@@ -1,18 +1,18 @@
 <Project>
 
   <PropertyGroup Label="Package">
-    <Description>A high-performance Serilog sink that writes log events to MongoDB</Description>
+    <Description>A high-performance Serilog sink that writes log events to SQL Server</Description>
     <Copyright>Copyright © $([System.DateTime]::Now.ToString(yyyy)) LoreSoft</Copyright>
     <Authors>LoreSoft</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>serilog;logging;mongodb</PackageTags>
-    <PackageProjectUrl>https://github.com/loresoft/serilog-sinks-mongo</PackageProjectUrl>
+    <PackageTags>serilog;logging;sqlserver</PackageTags>
+    <PackageProjectUrl>https://github.com/loresoft/serilog-sinks-sqlserver</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/loresoft/serilog-sinks-mongo</RepositoryUrl>
+    <RepositoryUrl>https://github.com/loresoft/serilog-sinks-sqlserver</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
