@@ -13,6 +13,18 @@ namespace Serilog.Sinks.SqlServer;
 /// </summary>
 public static class JsonWriter
 {
+    // Pre-encoded JSON property names for exception details
+    private static readonly JsonEncodedText MessageProperty = JsonEncodedText.Encode("Message");
+    private static readonly JsonEncodedText BaseMessageProperty = JsonEncodedText.Encode("BaseMessage");
+    private static readonly JsonEncodedText TypeProperty = JsonEncodedText.Encode("Type");
+    private static readonly JsonEncodedText TextProperty = JsonEncodedText.Encode("Text");
+    private static readonly JsonEncodedText ErrorCodeProperty = JsonEncodedText.Encode("ErrorCode");
+    private static readonly JsonEncodedText HResultProperty = JsonEncodedText.Encode("HResult");
+    private static readonly JsonEncodedText SourceProperty = JsonEncodedText.Encode("Source");
+    private static readonly JsonEncodedText MethodNameProperty = JsonEncodedText.Encode("MethodName");
+    private static readonly JsonEncodedText ModuleNameProperty = JsonEncodedText.Encode("ModuleName");
+    private static readonly JsonEncodedText ModuleVersionProperty = JsonEncodedText.Encode("ModuleVersion");
+
     /// <summary>
     /// Writes an exception to a JSON string representation.
     /// </summary>
@@ -47,33 +59,33 @@ public static class JsonWriter
         {
             writer.WriteStartObject();
 
-            writer.WriteString("Message", exception.Message);
+            writer.WriteString(MessageProperty, exception.Message);
 
             // include base exception message
             if (exception.InnerException != null)
-                writer.WriteString("BaseMessage", exception.GetBaseException().Message);
+                writer.WriteString(BaseMessageProperty, exception.GetBaseException().Message);
 
-            writer.WriteString("Type", exception.GetType().FullName);
-            writer.WriteString("Text", exception.ToString());
+            writer.WriteString(TypeProperty, exception.GetType().FullName);
+            writer.WriteString(TextProperty, exception.ToString());
 
             if (exception is ExternalException external)
-                writer.WriteNumber("ErrorCode", external.ErrorCode);
+                writer.WriteNumber(ErrorCodeProperty, external.ErrorCode);
 
-            writer.WriteNumber("HResult", exception.HResult);
+            writer.WriteNumber(HResultProperty, exception.HResult);
 
             if (!string.IsNullOrEmpty(exception.Source))
-                writer.WriteString("Source", exception.Source);
+                writer.WriteString(SourceProperty, exception.Source);
 
             var method = exception.TargetSite;
             if (method != null)
             {
-                writer.WriteString("MethodName", method.Name);
+                writer.WriteString(MethodNameProperty, method.Name);
 
                 var assembly = method.Module?.Assembly?.GetName();
                 if (assembly != null)
                 {
-                    writer.WriteString("ModuleName", assembly.Name);
-                    writer.WriteString("ModuleVersion", assembly.Version?.ToString());
+                    writer.WriteString(ModuleNameProperty, assembly.Name);
+                    writer.WriteString(ModuleVersionProperty, assembly.Version?.ToString());
                 }
             }
 
