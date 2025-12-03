@@ -9,6 +9,8 @@ namespace Serilog.Sinks.SqlServer;
 /// <remarks>
 /// This class enables bulk insert operations by wrapping an enumerable collection and exposing it through the IDataReader interface.
 /// Column mappings are defined through the <see cref="MappingContext{T}"/> which specifies how to extract values from each item.
+/// The <see cref="MappingContext{T}"/> instance should be created once and reused across multiple <see cref="ListDataReader{T}"/> instances
+/// to avoid the overhead of recreating column mappings and schema information for each operation.
 /// </remarks>
 public class ListDataReader<T> : IDataReader
 {
