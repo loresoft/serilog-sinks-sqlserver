@@ -529,6 +529,78 @@ WITH (DATA_COMPRESSION = PAGE);
 
 You can add indexes, partitioning, and other optimizations based on your specific requirements. See the [Quick Start](#quick-start) section for complete table examples.
 
+## Log Management and Archival
+
+As your application generates logs over time, the log table will grow continuously. It's important to implement a log retention strategy to manage storage costs and maintain query performance.
+
+### Automated Log Purging
+
+The following stored procedure provides an efficient way to delete old log entries in batches, preventing transaction log bloat and minimizing system impact:
+
+```sql
+CREATE PROCEDURE dbo.PurgeLogs
+    @RetentionDays INT = 90,
+    @BatchSize INT = 5000
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Calculate the threshold date
+    DECLARE @Threshold DATETIMEOFFSET = DATEADD(DAY, -@RetentionDays, SYSUTCDATETIME());
+    DECLARE @RowsDeleted INT = 0;
+    DECLARE @TotalDeleted INT = 0;
+
+    -- Validate batch size
+    IF @BatchSize <= 0
+        SET @BatchSize = 5000;
+   
+    -- Delete in batches to prevent transaction log bloat and reduce lock contention
+    WHILE 1 = 1
+    BEGIN
+        DELETE TOP (@BatchSize)
+        FROM dbo.LogEvent WITH (ROWLOCK)
+        WHERE [Timestamp] < @Threshold;
+
+        SET @RowsDeleted = @@ROWCOUNT;
+        SET @TotalDeleted = @TotalDeleted + @RowsDeleted;
+
+        -- Exit if no more rows to delete
+        IF @RowsDeleted = 0
+            BREAK;
+
+        -- Brief delay between batches to reduce contention
+        WAITFOR DELAY '00:00:00.100';  -- 100ms
+    END
+   
+    -- Return summary
+    SELECT @TotalDeleted AS TotalRowsDeleted;
+END
+```
+
+**How the procedure works:**
+
+1. **Batch Processing**: Deletes records in configurable batches (default 10,000 rows) rather than all at once
+   - Prevents transaction log from filling up
+   - Reduces lock duration and blocking
+   - Allows other queries to access the table between batches
+   - Makes the operation recoverable if interrupted
+
+2. **Row-Level Locking**: Uses `WITH (ROWLOCK)` hint to minimize lock escalation and reduce contention with concurrent operations
+
+3. **Threshold-Based Deletion**: Removes logs older than the specified retention period (default 90 days)
+
+4. **Progress Tracking**: Returns total deleted rows and provides feedback during execution
+
+### Alternative: Table Partitioning
+
+For very high-volume logging scenarios, consider implementing table partitioning by date:
+
+- **Benefits**: Near-instant deletion of old partitions, better query performance, easier maintenance
+- **Trade-off**: More complex initial setup and management
+- **Recommended for**: Systems generating millions of log entries per day
+
+See [SQL Server table partitioning documentation](https://learn.microsoft.com/en-us/sql/relational-databases/partitions/partitioned-tables-and-indexes) for implementation details.
+
 ## Troubleshooting
 
 ### Connection Issues
