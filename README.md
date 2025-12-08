@@ -220,6 +220,7 @@ The `SqlServerSinkOptions` class inherits from `BatchingOptions` and provides th
 | `TableName`          | `"LogEvent"`                       | Name of the table to write logs to                       |
 | `TableSchema`        | `"dbo"`                            | Schema of the table                                      |
 | `MinimumLevel`       | `LevelAlias.Minimum`               | Minimum log event level                                  |
+| `LevelSwitch`        | `null`                             | Dynamic level switch for runtime level adjustments       |
 | `BulkCopyOptions`    | `SqlBulkCopyOptions.Default`       | SqlBulkCopy options for bulk insert operations           |
 | `Mappings`           | `MappingDefaults.StandardMappings` | Column mappings for log event properties                 |
 | `BatchSizeLimit`     | `1000`                             | Number of log events to batch before writing (inherited) |
@@ -340,9 +341,9 @@ Log.Logger = new LoggerConfiguration()
         config.TableName = "LogExtended";
         
         // Add custom property mappings
-        config.AddPropertyMapping("ApplicationName");
-        config.AddPropertyMapping("ApplicationVersion");
-        config.AddPropertyMapping("EnvironmentName");
+        config.AddPropertyMapping("ApplicationName", size: 500);
+        config.AddPropertyMapping("ApplicationVersion", size: 500);
+        config.AddPropertyMapping("EnvironmentName", size: 500);
     })
     .CreateLogger();
 ```

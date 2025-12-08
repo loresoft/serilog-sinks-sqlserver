@@ -62,15 +62,13 @@ public static class LoggerConfigurationExtensions
         string tableSchema = MappingDefaults.TableSchema,
         LogEventLevel minimumLevel = LevelAlias.Minimum,
         SqlBulkCopyOptions bulkCopyOptions = SqlBulkCopyOptions.Default,
-        LoggingLevelSwitch? levelSwitch = null
-    )
+        LoggingLevelSwitch? levelSwitch = null)
     {
         if (loggerConfiguration is null)
             throw new ArgumentNullException(nameof(loggerConfiguration));
 
         if (string.IsNullOrEmpty(connectionString))
-            throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or empty.",
-                nameof(connectionString));
+            throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or empty.", nameof(connectionString));
 
         return SqlServer(loggerConfiguration, sinkOptions =>
         {

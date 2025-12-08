@@ -37,6 +37,11 @@ public static class MappingDefaults
     public const string MessageName = "Message";
 
     /// <summary>
+    /// The default column name for the log event message template.
+    /// </summary>
+    public const string TemplateName = "Template";
+
+    /// <summary>
     /// The default column name for the distributed tracing trace ID.
     /// </summary>
     public const string TraceIdName = "TraceId";
@@ -101,6 +106,19 @@ public static class MappingDefaults
     );
 
     /// <summary>
+    /// Gets the default column mapping for the log event message template.
+    /// </summary>
+    /// <remarks>
+    /// Maps to a nullable string column containing the message template.
+    /// </remarks>
+    public static readonly ColumnMapping<LogEvent> TemplateMapping = new(
+        ColumnName: TemplateName,
+        ColumnType: typeof(string),
+        GetValue: static logEvent => logEvent.MessageTemplate?.Text,
+        Nullable: true
+    );
+
+    /// <summary>
     /// Gets the default column mapping for the distributed tracing trace ID.
     /// </summary>
     /// <remarks>
@@ -154,7 +172,7 @@ public static class MappingDefaults
     /// Gets the default column mapping for the source context property.
     /// </summary>
     /// <remarks>
-    /// Maps to a nullable string column with a maximum size of 1000 characters. 
+    /// Maps to a nullable string column with a maximum size of 1000 characters.
     /// Contains the source context (typically the full type name of the class creating the log event).
     /// </remarks>
     public static readonly ColumnMapping<LogEvent> SourceContextMapping = new(
