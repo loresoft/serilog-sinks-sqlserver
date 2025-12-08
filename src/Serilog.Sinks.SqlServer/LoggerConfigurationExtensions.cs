@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 
 using Serilog.Configuration;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace Serilog.Sinks.SqlServer;
@@ -35,7 +36,7 @@ public static class LoggerConfigurationExtensions
 
         var sink = new SqlServerSink(options);
 
-        return loggerConfiguration.Sink(sink, options, options.MinimumLevel);
+        return loggerConfiguration.Sink(sink, options, options.MinimumLevel, levelSwitch: options.LevelSwitch);
     }
 
     /// <summary>
@@ -47,6 +48,7 @@ public static class LoggerConfigurationExtensions
     /// <param name="tableSchema">The schema of the table. Defaults to <see cref="MappingDefaults.TableSchema"/>.</param>
     /// <param name="minimumLevel">The minimum log event level required to write an event to the sink. Defaults to <see cref="LevelAlias.Minimum"/>.</param>
     /// <param name="bulkCopyOptions">Options for the SQL bulk copy operation. Defaults to <see cref="SqlBulkCopyOptions.Default"/>.</param>
+    /// <param name="levelSwitch">The <see cref="LoggingLevelSwitch"/> instance, allowing runtime adjustments to the filtering level.</param>
     /// <returns>The logger configuration, allowing method chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="loggerConfiguration"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="connectionString"/> is null or empty.</exception>
@@ -59,13 +61,16 @@ public static class LoggerConfigurationExtensions
         string tableName = MappingDefaults.TableName,
         string tableSchema = MappingDefaults.TableSchema,
         LogEventLevel minimumLevel = LevelAlias.Minimum,
-        SqlBulkCopyOptions bulkCopyOptions = SqlBulkCopyOptions.Default)
+        SqlBulkCopyOptions bulkCopyOptions = SqlBulkCopyOptions.Default,
+        LoggingLevelSwitch? levelSwitch = null
+    )
     {
         if (loggerConfiguration is null)
             throw new ArgumentNullException(nameof(loggerConfiguration));
 
         if (string.IsNullOrEmpty(connectionString))
-            throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or empty.", nameof(connectionString));
+            throw new ArgumentException($"'{nameof(connectionString)}' cannot be null or empty.",
+                nameof(connectionString));
 
         return SqlServer(loggerConfiguration, sinkOptions =>
         {
@@ -73,6 +78,7 @@ public static class LoggerConfigurationExtensions
             sinkOptions.TableName = tableName;
             sinkOptions.TableSchema = tableSchema;
             sinkOptions.MinimumLevel = minimumLevel;
+            sinkOptions.LevelSwitch = levelSwitch;
             sinkOptions.BulkCopyOptions = bulkCopyOptions;
         });
     }

@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 
 using Serilog.Configuration;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace Serilog.Sinks.SqlServer;
@@ -19,6 +20,16 @@ public class SqlServerSinkOptions : BatchingOptions
     /// </summary>
     /// <value>The minimum log event level. Defaults to <see cref="LevelAlias.Minimum"/>.</value>
     public LogEventLevel MinimumLevel { get; set; } = LevelAlias.Minimum;
+
+    /// <summary>
+    /// Gets or sets the <see cref="LoggingLevelSwitch"/> that dynamically controls the log event level
+    /// required to write an event to the sink.
+    /// </summary>
+    /// <value>
+    /// The <see cref="LoggingLevelSwitch"/> instance, allowing runtime adjustments to the filtering level.
+    /// If null, the level is determined by the <see cref="MinimumLevel"/> property.
+    /// </value>
+    public LoggingLevelSwitch? LevelSwitch { get; set; }
 
     /// <summary>
     /// Gets or sets the connection string to the SQL Server database.
