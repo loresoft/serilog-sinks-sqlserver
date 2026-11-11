@@ -10,8 +10,8 @@
     <PackageVersion Include="dbup-sqlserver" Version="7.2.0" />
     <PackageVersion Include="MicroSoft.Data.SqlClient" Version="7.1.1" />
     <PackageVersion Include="Microsoft.Data.SqlClient.Extensions.Azure" Version="7.1.1" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.14" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" Version="18.3.36726.2" />
     <PackageVersion Include="MinVer" Version="8.0.0" />
@@ -26,7 +26,7 @@
     <PackageVersion Include="System.CommandLine" Version="2.0.14" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.16.0" />
-    <PackageVersion Include="XUnit.Hosting" Version="4.1.0" />
+    <PackageVersion Include="XUnit.Hosting" Version="5.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
     <PackageVersion Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
